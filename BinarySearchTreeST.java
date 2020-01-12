@@ -38,14 +38,19 @@ public class BinarySearchTreeST<Key extends Comparable, Value> {
   }
 
   public Key min() {
-    return min(this.root);
+    Node result = min(this.root);
+
+    if (result != null)
+      return result.key;
+
+    return null;
   }
 
-  private Key min(Node node) {
+  private Node min(Node node) {
     if (node == null)
       return null;
     else if (node.left == null)
-      return node.key;
+      return node;
     else
       return min(node.left);
   }
@@ -61,6 +66,46 @@ public class BinarySearchTreeST<Key extends Comparable, Value> {
       return node.key;
     else
       return max(node.right);
+  }
+
+  public void deleteMin() {
+    this.root = deleteMin(this.root);
+  }
+
+  private Node deleteMin(Node node) {
+    if (node.left == null) {
+      return node.right;
+    } else {
+      node.left = deleteMin(node.left);
+      return node;
+    }
+  }
+
+  public void delete(Key key) {
+    this.root = delete(key, this.root);
+  }
+
+  public Node delete(Key key, Node node) {
+    if (node == null)
+      return null;
+    else if (key.compareTo(node.key) < 0)
+      node.left = delete(key, node.left);
+    else if (key.compareTo(node.key) > 0)
+      node.right = delete(key, node.right);
+    else {
+      if (node.right == null)
+        return node.left;
+      else if (node.left == null)
+        return node.right;
+      
+      Node temp = node;
+
+      node = min(temp.right);
+      node.right = deleteMin(node.right);
+      node.left = deleteMin(node.left);
+    }
+
+    return node;
   }
 
   private class Node {
